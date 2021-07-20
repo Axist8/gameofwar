@@ -2,6 +2,11 @@ let deckID;
 const newGameBtn = document.getElementById('newGameButton');
 const cardsRemaining = document.getElementById('cardsRemaining');
 const drawBtn = document.getElementById('drawButton');
+const compScoreText = document.getElementById('computerScore');
+const userScoreText = document.getElementById('userScore')
+const roundWinnerText = document.getElementById('roundWinner');
+let computerScore;
+let userScore;
 
 function newGame(e) {
     e.preventDefault();
@@ -13,8 +18,14 @@ function newGame(e) {
         })
     drawBtn.classList.remove('disable');
     drawBtn.disabled = false;
+    computerScore = 0;
+    userScore = 0;
+    compScoreText.innerText = 'Computer Score: 0';
+    userScoreText.innerText = 'User Score: 0';
+    roundWinnerText.innerText = '-'
 }
 
+window.addEventListener('DOMContentLoaded', newGame);
 newGameBtn.addEventListener('click', newGame);
 
 function determineRoundWinner(firstCard, secondCard) {
@@ -23,8 +34,10 @@ function determineRoundWinner(firstCard, secondCard) {
     console.log(firstCardValue);
     const secondCardValue = cardTypeArray.findIndex(card => card === `${secondCard.value}`);
     if (firstCardValue > secondCardValue) {
+        computerScore++
         return 'Lose'
     } else if (secondCardValue > firstCardValue) {
+        userScore++
         return 'Win!'
     } else {
         return 'Tie'
@@ -46,13 +59,31 @@ function draw(e) {
                 <img src="${cardTwo.image}" alt="${cardTwo.value} of ${cardTwo.suit}" class="card" /> 
             `
             const roundWinner = determineRoundWinner(cardOne, cardTwo);
-            document.getElementById('roundWinner').innerText = `${roundWinner}`
+            roundWinnerText.innerText = `${roundWinner}`
             cardsRemaining.innerText = `${data.remaining}`
             if (data.remaining === 0) {
                 drawBtn.disabled = true;
                 drawBtn.classList.add('disable');
+                let winner;
+                let finalScore;
+                if (userScore > computerScore) {
+                    winner = 'You Win!!';
+                    finalScore = `${userScore} / ${computerScore}`;
+                } else if (computerScore > userScore) {
+                    winner = 'The Computer Wins!'
+                    finalScore = `${computerScore} / ${userScore}`;
+                } else if (computerScore === userScore) {
+                    winner = "It's a Tie.."
+                    finalScore = `${userScore} / ${computerScore}`;
+                }
+                userScoreText.innerText = `${winner}`;
+                compScoreText.innerText = `${finalScore}`;
+                return;
             }
+            compScoreText.innerText = `Computer: ${computerScore}`;
+            userScoreText.innerText = `User Score: ${userScore}`;
         })
+        
 }
 
 drawBtn.addEventListener('click', draw);
